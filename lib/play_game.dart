@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
+import 'package:math_quiz_game/menu_page.dart';
 
 class PlayGame extends StatefulWidget {
   const PlayGame({Key? key}) : super(key: key);
@@ -26,6 +27,7 @@ class _PlayGameState extends State<PlayGame> {
     const oneSecond = const Duration(seconds: 1);
     _timer = Timer.periodic(oneSecond, (timer) {
       if (timerStart == 0) {
+        gameOverDialog(context);
         Fluttertoast.showToast(msg: "Time is up", backgroundColor: Colors.red);
         setState(() {
           _timer.cancel();
@@ -38,11 +40,12 @@ class _PlayGameState extends State<PlayGame> {
     });
   }
 
-  //Dialog Box
-  showAlertDialog(BuildContext context) {
+  //Wrong Answer Dialog
+  wrongAnwserDialog(BuildContext context) {
     Widget cancelButton = TextButton(
       child: Text("Try Again"),
       onPressed: () {
+        Navigator.pop(context);
         Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => PlayGame()),
@@ -52,7 +55,9 @@ class _PlayGameState extends State<PlayGame> {
     Widget continueButton = TextButton(
       child: Text("Skip"),
       onPressed: () {
-        generateRandomNumbers();
+        Fluttertoast.showToast(msg: "Question Skipped");
+        generateRandomNumbers(context);
+        Navigator.pop(context);
       },
     );
 
@@ -75,13 +80,141 @@ class _PlayGameState extends State<PlayGame> {
     );
   }
 
+  //Game Over Dialog
+  gameOverDialog(context) {
+    return showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+            height: MediaQuery.of(context).size.height - 400,
+            child: AlertDialog(
+              insetPadding: EdgeInsets.symmetric(vertical: 70.0),
+              title: Text(
+                "Gameover",
+                style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
+              ),
+              content: Column(
+                children: [
+                  score > 25
+                      ? Text(
+                          "Congratulations! You have scored",
+                          style: TextStyle(
+                              fontSize: 20.0, fontWeight: FontWeight.bold),
+                        )
+                      : Text(
+                          "You can do better, You have scored",
+                          style: TextStyle(
+                              fontSize: 20.0, fontWeight: FontWeight.bold),
+                        ),
+                  SizedBox(
+                    height: 10.0,
+                  ),
+                  Container(
+                    height: 300,
+                    width: 300,
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                            image: score > 25
+                                ? AssetImage("assets/congratulations.gif")
+                                : AssetImage("assets/sad.gif"),
+                            fit: BoxFit.scaleDown)),
+                  ),
+                  SizedBox(
+                    height: 10.0,
+                  ),
+                  Center(
+                    child: Text(
+                      "$score / 50",
+                      style: TextStyle(
+                          fontSize: 32.0, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  Container(
+                    margin: EdgeInsets.all(10.0),
+                    height: 50,
+                    decoration: BoxDecoration(
+                        border: Border.all(color: Colors.black),
+                        borderRadius: BorderRadius.all(Radius.circular(20.0))),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.share),
+                        SizedBox(
+                          width: 10.0,
+                        ),
+                        Text("Share with Friends")
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  child: Text(
+                    "Play Again!",
+                    style:
+                        TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                  ),
+                  onPressed: () {
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (context) => PlayGame()),
+                        (route) => false);
+                  },
+                ),
+                TextButton(
+                  child: Text(
+                    "Exit",
+                    style:
+                        TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                  ),
+                  onPressed: () {
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (context) => MenuPage()),
+                        (route) => false);
+                  },
+                ),
+              ],
+            ),
+          );
+        });
+    // return Dialog(
+    //     backgroundColor: Colors.transparent,
+    //     insetPadding: EdgeInsets.all(10),
+    //     child: Stack(
+    //       overflow: Overflow.visible,
+    //       alignment: Alignment.center,
+    //       children: <Widget>[
+    //         Container(
+    //           width: double.infinity,
+    //           height: 200,
+    //           decoration: BoxDecoration(
+    //               borderRadius: BorderRadius.circular(15),
+    //               color: Colors.lightBlue),
+    //           padding: EdgeInsets.fromLTRB(20, 50, 20, 20),
+    //           child: Text("You can make cool stuff!",
+    //               style: TextStyle(fontSize: 24), textAlign: TextAlign.center),
+    //         ),
+    //         Positioned(
+    //             top: -100,
+    //             child: Image.asset("assets/congratulations.gif",
+    //                 width: 150, height: 150))
+    //       ],
+    //     ));
+  }
+
   /* 
   - Generate Random Numbers
   - Append them in the List 
   - Shuffle the list
   - Store the correct answer in an variable.
   */
-  generateRandomNumbers() {
+  generateRandomNumbers(context) {
     questionNo += 1;
     var rng = Random();
     for (var i = 0; i < 10; i++) {
@@ -100,7 +233,7 @@ class _PlayGameState extends State<PlayGame> {
       correctAnswer = operand1 + operand2;
     });
     if (questionNo > 10) {
-      Fluttertoast.showToast(msg: "All questions done");
+      gameOverDialog(context);
     }
   }
 
@@ -108,7 +241,7 @@ class _PlayGameState extends State<PlayGame> {
   void initState() {
     super.initState();
     startTimer();
-    generateRandomNumbers();
+    generateRandomNumbers(context);
   }
 
   @override
@@ -147,21 +280,41 @@ class _PlayGameState extends State<PlayGame> {
         ),
       ),
       body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+              image: AssetImage("assets/background3.jpg"), fit: BoxFit.cover),
+        ),
         padding: EdgeInsets.all(15.0),
         child: Column(
           children: [
             SizedBox(height: 20.0),
-            Center(
-                child: Text(
-              "Question No : $questionNo",
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-            )),
-            SizedBox(
-              height: h * 0.03,
-            ),
-            Text(
-              "$operand1 $operator $operand2 = ?",
-              style: TextStyle(fontSize: 36.0, fontWeight: FontWeight.bold),
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 20.0),
+              decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.5),
+                  borderRadius: BorderRadius.all(Radius.circular(40.0))),
+              child: Column(
+                children: [
+                  Center(
+                      child: Text(
+                    "Question No : $questionNo",
+                    style: TextStyle(
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  )),
+                  SizedBox(
+                    height: h * 0.03,
+                  ),
+                  Text(
+                    "$operand1 $operator $operand2 = ?",
+                    style: TextStyle(
+                        fontSize: 38.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                ],
+              ),
             ),
             SizedBox(
               height: h * 0.03,
@@ -175,16 +328,19 @@ class _PlayGameState extends State<PlayGame> {
                       onTap: () {
                         if (numbers[index] == correctAnswer) {
                           print("Congratulations, You earned 5 points");
-                          generateRandomNumbers();
+                          generateRandomNumbers(context);
                           score += 5;
                         } else {
-                          showAlertDialog(context);
+                          wrongAnwserDialog(context);
                         }
                       },
                       child: Container(
                         margin: EdgeInsets.all(10.0),
                         height: h * 0.1,
-                        color: Colors.red,
+                        decoration: BoxDecoration(
+                            color: Colors.pink,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(20.0))),
                         width: w * 0.6,
                         child: Center(
                           child: Text(

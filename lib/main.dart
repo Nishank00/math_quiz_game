@@ -21,6 +21,10 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: 'Math Quiz Game',
       home: MenuPage(),
+      theme: ThemeData(
+        primaryColor: Colors.pink,
+        accentColor: Colors.pink,
+      ),
     );
   }
 }
