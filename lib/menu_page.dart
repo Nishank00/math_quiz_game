@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:math_quiz_game/options_page.dart';
 import 'package:math_quiz_game/play_game.dart';
+import 'package:math_quiz_game/selectOperator.dart';
 
 class MenuPage extends StatefulWidget {
   const MenuPage({Key? key}) : super(key: key);
@@ -48,7 +49,7 @@ class _MenuPageState extends State<MenuPage> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => PlayGame()));
+                                builder: (context) => SelectOperator()));
                       },
                       child: Container(
                         height: h * 0.1,

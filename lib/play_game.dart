@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:math_quiz_game/menu_page.dart';
 
 class PlayGame extends StatefulWidget {
-  const PlayGame({Key? key}) : super(key: key);
+  final String operator;
+  const PlayGame({Key? key, required this.operator}) : super(key: key);
 
   @override
   _PlayGameState createState() => _PlayGameState();
@@ -18,7 +19,7 @@ class _PlayGameState extends State<PlayGame> {
   int score = 0;
   int questionNo = 0;
   late int operand1, operand2;
-  String operator = "+";
+  late String operator;
   late List<int> numbers;
   late int correctAnswer;
 
@@ -48,7 +49,10 @@ class _PlayGameState extends State<PlayGame> {
         Navigator.pop(context);
         Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => PlayGame()),
+            MaterialPageRoute(
+                builder: (context) => PlayGame(
+                      operator: operator,
+                    )),
             (route) => false);
       },
     );
@@ -162,7 +166,10 @@ class _PlayGameState extends State<PlayGame> {
                   onPressed: () {
                     Navigator.pushAndRemoveUntil(
                         context,
-                        MaterialPageRoute(builder: (context) => PlayGame()),
+                        MaterialPageRoute(
+                            builder: (context) => PlayGame(
+                                  operator: operator,
+                                )),
                         (route) => false);
                   },
                 ),
@@ -183,29 +190,6 @@ class _PlayGameState extends State<PlayGame> {
             ),
           );
         });
-    // return Dialog(
-    //     backgroundColor: Colors.transparent,
-    //     insetPadding: EdgeInsets.all(10),
-    //     child: Stack(
-    //       overflow: Overflow.visible,
-    //       alignment: Alignment.center,
-    //       children: <Widget>[
-    //         Container(
-    //           width: double.infinity,
-    //           height: 200,
-    //           decoration: BoxDecoration(
-    //               borderRadius: BorderRadius.circular(15),
-    //               color: Colors.lightBlue),
-    //           padding: EdgeInsets.fromLTRB(20, 50, 20, 20),
-    //           child: Text("You can make cool stuff!",
-    //               style: TextStyle(fontSize: 24), textAlign: TextAlign.center),
-    //         ),
-    //         Positioned(
-    //             top: -100,
-    //             child: Image.asset("assets/congratulations.gif",
-    //                 width: 150, height: 150))
-    //       ],
-    //     ));
   }
 
   /* 
@@ -225,13 +209,43 @@ class _PlayGameState extends State<PlayGame> {
     }
     print("Operand 1: $operand1, Operand2: $operand2");
     numbers = [];
-    numbers.add(operand1 + operand2);
-    numbers.add(operand1 + operand2 + 5);
-    numbers.add(operand1 + operand2 - 5);
+    switch (operator) {
+      case "+":
+        numbers.add(operand1 + operand2);
+        numbers.add(operand1 + operand2 + 5);
+        numbers.add(operand1 + operand2 - 5);
+        setState(() {
+          correctAnswer = operand1 + operand2;
+        });
+        break;
+      case "-":
+        numbers.add(operand1 - operand2);
+        numbers.add(operand1 - operand2 + 5);
+        numbers.add(operand1 - operand2 - 5);
+        setState(() {
+          correctAnswer = operand1 - operand2;
+        });
+        break;
+      case "x":
+        numbers.add(operand1 * operand2);
+        numbers.add(operand1 * operand2 + 5);
+        numbers.add(operand1 * operand2 - 5);
+        setState(() {
+          correctAnswer = operand1 * operand2;
+        });
+        break;
+      case "÷":
+        numbers.add((operand1 / operand2).round());
+        numbers.add((operand1 / operand2 + 5).round());
+        numbers.add((operand1 / operand2 - 5).round());
+        setState(() {
+          correctAnswer = (operand1 / operand2).round();
+        });
+        break;
+      default:
+    }
     numbers.shuffle();
-    setState(() {
-      correctAnswer = operand1 + operand2;
-    });
+
     if (questionNo > 10) {
       gameOverDialog(context);
     }
@@ -241,7 +255,12 @@ class _PlayGameState extends State<PlayGame> {
   void initState() {
     super.initState();
     startTimer();
+    setState(() {
+      operator = widget.operator;
+    });
     generateRandomNumbers(context);
+
+    print(operator);
   }
 
   @override
