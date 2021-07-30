@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:math_quiz_game/configs/globals.dart';
 import 'package:math_quiz_game/menu_page.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
 
@@ -14,7 +15,10 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  //TODO Add Music
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

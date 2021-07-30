@@ -1,8 +1,11 @@
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:math_quiz_game/options_page.dart';
 import 'package:math_quiz_game/play_game.dart';
-import 'package:math_quiz_game/selectOperator.dart';
+import 'package:math_quiz_game/select_operator.dart';
+
+import 'configs/globals.dart';
 
 class MenuPage extends StatefulWidget {
   const MenuPage({Key? key}) : super(key: key);
@@ -12,6 +15,22 @@ class MenuPage extends StatefulWidget {
 }
 
 class _MenuPageState extends State<MenuPage> {
+  final AssetsAudioPlayer assetsAudioPlayer = AssetsAudioPlayer();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    try {
+      isMusicOn
+          ? assetsAudioPlayer.open(Audio("assets/background_music.mp3"),
+              loopMode: LoopMode.single)
+          : assetsAudioPlayer.stop();
+    } catch (t) {
+      print("Error: $t");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double h = MediaQuery.of(context).size.height;
