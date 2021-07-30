@@ -30,6 +30,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   assets_audio_player: ^3.0.3+6
   fluttertoast: ^8.0.7
+  share_plus: ^2.1.4
 
 dev_dependencies:
   flutter_test:

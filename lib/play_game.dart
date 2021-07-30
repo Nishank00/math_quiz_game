@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 import 'package:math_quiz_game/menu_page.dart';
+import 'package:share_plus/share_plus.dart';
 
 class PlayGame extends StatefulWidget {
   final String operator;
@@ -44,7 +45,10 @@ class _PlayGameState extends State<PlayGame> {
   //Wrong Answer Dialog
   wrongAnwserDialog(BuildContext context) {
     Widget cancelButton = TextButton(
-      child: Text("Try Again"),
+      child: Text(
+        "Try Again",
+        style: TextStyle(fontSize: 15, color: Colors.pink),
+      ),
       onPressed: () {
         Navigator.pop(context);
         Navigator.pushAndRemoveUntil(
@@ -57,7 +61,10 @@ class _PlayGameState extends State<PlayGame> {
       },
     );
     Widget continueButton = TextButton(
-      child: Text("Skip"),
+      child: Text(
+        "Skip",
+        style: TextStyle(fontSize: 15, color: Colors.pink),
+      ),
       onPressed: () {
         Fluttertoast.showToast(msg: "Question Skipped");
         generateRandomNumbers(context);
@@ -137,21 +144,31 @@ class _PlayGameState extends State<PlayGame> {
                   SizedBox(
                     height: 20.0,
                   ),
-                  Container(
-                    margin: EdgeInsets.all(10.0),
-                    height: 50,
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black),
-                        borderRadius: BorderRadius.all(Radius.circular(20.0))),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.share),
-                        SizedBox(
-                          width: 10.0,
-                        ),
-                        Text("Share with Friends")
-                      ],
+                  InkWell(
+                    onTap: () {
+                      Share.share(
+                          "Hey Friends, I scored $score / 50. In this Math Quiz Game");
+                    },
+                    child: Container(
+                      margin: EdgeInsets.all(10.0),
+                      height: 50,
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black),
+                          borderRadius:
+                              BorderRadius.all(Radius.circular(20.0))),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.share,
+                            color: Colors.green,
+                          ),
+                          SizedBox(
+                            width: 10.0,
+                          ),
+                          Text("Share with Friends")
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -160,8 +177,10 @@ class _PlayGameState extends State<PlayGame> {
                 TextButton(
                   child: Text(
                     "Play Again!",
-                    style:
-                        TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.pink),
                   ),
                   onPressed: () {
                     Navigator.pushAndRemoveUntil(
@@ -176,8 +195,10 @@ class _PlayGameState extends State<PlayGame> {
                 TextButton(
                   child: Text(
                     "Exit",
-                    style:
-                        TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.pink),
                   ),
                   onPressed: () {
                     Navigator.pushAndRemoveUntil(
@@ -235,11 +256,11 @@ class _PlayGameState extends State<PlayGame> {
         });
         break;
       case "÷":
-        numbers.add((operand1 / operand2).round());
-        numbers.add((operand1 / operand2 + 5).round());
-        numbers.add((operand1 / operand2 - 5).round());
+        numbers.add((operand1 ~/ operand2).toInt());
+        numbers.add((operand1 / operand2 + 5).toInt());
+        numbers.add((operand1 / operand2 - 5).toInt());
         setState(() {
-          correctAnswer = (operand1 / operand2).round();
+          correctAnswer = (operand1 ~/ operand2).toInt();
         });
         break;
       default:
@@ -346,7 +367,10 @@ class _PlayGameState extends State<PlayGame> {
                     return InkWell(
                       onTap: () {
                         if (numbers[index] == correctAnswer) {
-                          print("Congratulations, You earned 5 points");
+                          Fluttertoast.showToast(
+                              msg: "Congratulations, You earned 5 points",
+                              backgroundColor: Colors.green,
+                              textColor: Colors.white);
                           generateRandomNumbers(context);
                           score += 5;
                         } else {

@@ -22,10 +22,8 @@ class _MenuPageState extends State<MenuPage> {
     // TODO: implement initState
     super.initState();
     try {
-      isMusicOn
-          ? assetsAudioPlayer.open(Audio("assets/background_music.mp3"),
-              loopMode: LoopMode.single)
-          : assetsAudioPlayer.stop();
+      assetsAudioPlayer.open(Audio("assets/background_music.mp3"),
+          loopMode: LoopMode.single);
     } catch (t) {
       print("Error: $t");
     }
@@ -106,7 +104,9 @@ class _MenuPageState extends State<MenuPage> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => OptionsPage()));
+                                builder: (context) => OptionsPage(
+                                      advancePlayer: assetsAudioPlayer,
+                                    )));
                       },
                       child: Container(
                         height: h * 0.1,
